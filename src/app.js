@@ -9,7 +9,7 @@ require("dotenv").config();
 config();
 
 const app = express();
-const PORT = process.env.APP_PORT || 3232;
+const PORT = process.env.PORT || 9000;
 
 app.use(express.json());
 app.use(express.static(__dirname + "/public"));
