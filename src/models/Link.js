@@ -23,6 +23,7 @@ const LinkSchema = new Schema(
     isDeleted: {
       type: Boolean,
       default: false,
+      select: false,
     },
   },
   { versionKey: false, timestamps: true }

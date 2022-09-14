@@ -6,13 +6,14 @@ const UserSchema = new Schema(
     full_name: {
       type: String,
       required: true,
+      trim: true,
     },
     username: {
       type: String,
       required: true,
       unique: true,
     },
-    profile_image: {
+    profile_picture: {
       type: String,
     },
     views_count: {
@@ -30,6 +31,10 @@ const UserSchema = new Schema(
       required: true,
     },
     isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isBlocked: {
       type: Boolean,
       default: false,
     },
