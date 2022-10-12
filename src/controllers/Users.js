@@ -73,6 +73,9 @@ const login = (req, res, next) => {
   const query = { ...req.body };
   delete query.password;
   User.findOne({ ...query, isDeleted: false })
+    .select(
+      "_id username email firstName lastName profile_picture views_count password"
+    )
     .then((user) => {
       if (!user)
         return res.status(httpStatus.NOT_FOUND).json({
@@ -93,8 +96,6 @@ const login = (req, res, next) => {
           });
 
         user.password = undefined;
-        user.isDeleted = undefined;
-        user.isEmailVerified = undefined;
         const token = encryptText(
           generateAccessToken({
             ...user.toObject(),
@@ -184,14 +185,13 @@ const updateViewsCounts = (req, res, next) => {
 const getUserByToken = (req, res, next) => {
   console.log(req.user._id);
   User.findOne({ _id: req.user._id, isDeleted: false })
+    .select("_id username email firstName lastName profile_picture views_count")
     .then((user) => {
       if (!user)
         return next({
           statusCode: httpStatus.NOT_FOUND,
           message: "User not found",
         });
-      delete user.password;
-      delete user.isDeleted;
 
       return res.status(httpStatus.OK).json({
         success: true,

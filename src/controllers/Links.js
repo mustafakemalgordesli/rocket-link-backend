@@ -63,6 +63,7 @@ const getById = (req, res, next) => {
 
 const getAllByUserId = (req, res, next) => {
   Link.find({ user_id: req.user._id, isDeleted: false })
+    .select("_id title link isStatus user_id clicks_count")
     .then((links) => {
       if (!links)
         return next({
