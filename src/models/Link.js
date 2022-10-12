@@ -20,10 +20,13 @@ const LinkSchema = new Schema(
       ref: "User",
       required: true,
     },
+    isStatus: {
+      type: Boolean,
+      default: true,
+    },
     isDeleted: {
       type: Boolean,
       default: false,
-      select: false,
     },
   },
   { versionKey: false, timestamps: true }

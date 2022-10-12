@@ -8,20 +8,13 @@ const passwordToHash = (password) => {
 };
 
 const generateAccessToken = (user) => {
-  return JWT.sign(
-    { name: user.email, ...user },
-    process.env.ACCESS_TOKEN_SECRET_KEY,
-    {
-      expiresIn: "1w",
-    }
-  );
+  return JWT.sign({ ...user }, process.env.ACCESS_TOKEN_SECRET_KEY, {
+    expiresIn: "1w",
+  });
 };
 
 const generateRefreshToken = (user) => {
-  return JWT.sign(
-    { name: user.email, ...user },
-    process.env.REFRESH_TOKEN_SECRET_KEY
-  );
+  return JWT.sign({ ...user }, process.env.REFRESH_TOKEN_SECRET_KEY);
 };
 
 const encryptText = (text) => {

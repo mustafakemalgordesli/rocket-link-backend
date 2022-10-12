@@ -3,9 +3,13 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
   {
-    full_name: {
+    firstName: {
       type: String,
       required: true,
+      trim: true,
+    },
+    lastName: {
+      type: String,
       trim: true,
     },
     username: {
@@ -20,23 +24,9 @@ const UserSchema = new Schema(
       type: Number,
       default: 0,
     },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      // Onaylama İşlemi - isVerified: false,
-    },
     password: {
       type: String,
       required: true,
-    },
-    isEmailVerified: {
-      type: Boolean,
-      default: false,
-    },
-    isBlocked: {
-      type: Boolean,
-      default: false,
     },
     isDeleted: {
       type: Boolean,

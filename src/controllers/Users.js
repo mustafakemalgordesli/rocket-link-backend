@@ -5,24 +5,16 @@ const bcrypt = require("bcrypt");
 const { generateAccessToken, encryptText } = require("../scripts/utils/helper");
 
 const create = (req, res, next) => {
-  User.find({
-    $or: [{ email: req.body.email }, { username: req.body.username }],
-  })
+  User.find({ username: req.body.username, isDeleted: false })
     .exec()
     .then((user) => {
       if (user.length >= 1) {
-        if (user[0].email === req.body.email) {
-          return next({
-            statusCode: httpStatus.CONFLICT,
-            message: "Mail exists",
-          });
-        }
         return next({
           statusCode: httpStatus.CONFLICT,
           message: "Username exists",
         });
       }
-      bcrypt.genSalt(10, function (err, salt) {
+      bcrypt.genSalt(12, function (err, salt) {
         if (err) {
           return next({
             statusCode: httpStatus.BAD_REQUEST,
@@ -36,22 +28,14 @@ const create = (req, res, next) => {
               message: "User not created",
             });
           }
-          const user = new User({
-            email: req.body.email,
-            password: hash,
-            full_name: req.body.full_name,
-            username: req.body.username,
-          });
+          req.body.password = hash;
+          const user = new User(req.body);
           user.save().then((result) => {
             result.password = undefined;
-            result.isEmailVerified = undefined;
             result.isDeleted = undefined;
             const token = encryptText(
               generateAccessToken({
-                _id: result._id,
-                email: result.email,
-                username: result.username,
-                views_count: result.views_count,
+                user: result,
               })
             );
 
@@ -71,27 +55,8 @@ const create = (req, res, next) => {
     });
 };
 
-const index = (req, res) => {
-  User.find({
-    isDeleted: false,
-    isBlocked: false,
-  })
-    .then((response) => {
-      res.status(httpStatus.OK).json(response);
-    })
-    .catch((e) => {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).send(e);
-    });
-};
-
 const login = (req, res, next) => {
-  var query = {
-    isDeleted: false,
-    isBlocked: false,
-  };
-  if (req.body?.username) query.username = req.body.username;
-  if (req.body?.email) query.email = req.body.email;
-  User.findOne(query)
+  User.findOne({ username: req.body.username, isDeleted: false })
     .then((user) => {
       if (!user)
         return res.status(httpStatus.NOT_FOUND).json({
@@ -111,16 +76,8 @@ const login = (req, res, next) => {
           });
 
         user.password = undefined;
-        user.isEmailVerified = undefined;
         user.isDeleted = undefined;
-        const token = encryptText(
-          generateAccessToken({
-            _id: user._id,
-            email: user.email,
-            username: user.username,
-            views_count: user.views_count,
-          })
-        );
+        const token = encryptText(generateAccessToken(user));
         return res.status(httpStatus.OK).json({
           success: true,
           data: {
@@ -141,7 +98,7 @@ const login = (req, res, next) => {
 
 const changeProfilePic = (req, res, next) => {
   console.log(req.user);
-  User.findOne({ _id: req.user._id, isDeleted: false, isBlocked: false })
+  User.findOne({ _id: req.user._id, isDeleted: false })
     .then((user) => {
       user.profile_picture = "images/" + req.file.filename;
       user
@@ -170,9 +127,66 @@ const changeProfilePic = (req, res, next) => {
     });
 };
 
+const updateViewsCounts = (req, res, next) => {
+  User.findOne({
+    username: req.body.username,
+    isDeleted: false,
+  })
+    .then((user) => {
+      if (!user)
+        return next({
+          statusCode: httpStatus.NOT_FOUND,
+          message: "User not found",
+        });
+      user.views_count = user.views_count + 1;
+      user
+        .save()
+        .then((user) => {
+          return res.status(200).json({
+            success: true,
+          });
+        })
+        .catch((error) => {
+          return next({
+            error,
+          });
+        });
+    })
+    .catch((error) => {
+      return next({
+        error,
+      });
+    });
+};
+
+const getUserByToken = (req, res, next) => {
+  console.log(req.user._id);
+  User.findOne({ _id: req.user._id, isDeleted: false })
+    .then((user) => {
+      if (!user)
+        return next({
+          statusCode: httpStatus.NOT_FOUND,
+          message: "User not found",
+        });
+      delete user.password;
+      delete user.isDeleted;
+
+      return res.status(httpStatus.OK).json({
+        success: true,
+        data: user,
+      });
+    })
+    .catch((error) =>
+      next({
+        error,
+      })
+    );
+};
+
 module.exports = {
   create,
-  index,
   login,
   changeProfilePic,
+  updateViewsCounts,
+  getUserByToken,
 };

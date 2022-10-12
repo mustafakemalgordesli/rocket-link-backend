@@ -3,7 +3,7 @@ const Link = require("../models/Link");
 const User = require("../models/User");
 
 const create = (req, res, next) => {
-  User.findOne({ _id: req.body.user_id })
+  User.findOne({ _id: req.user._id })
     .then((user) => {
       if (!user) {
         return next({
@@ -60,7 +60,6 @@ const getById = (req, res, next) => {
 };
 
 const getAllByUserId = (req, res, next) => {
-  console.log(req.user);
   Link.find({ user_id: req.user._id, isDeleted: false })
     .then((links) => {
       if (!links)
@@ -81,7 +80,31 @@ const getAllByUserId = (req, res, next) => {
     });
 };
 
-const update = (req, res, next) => {};
+const update = (req, res, next) => {
+  Link.updateOne(
+    {
+      _id: req.params.id,
+      isDeleted: false,
+      isStatus: true,
+    },
+    { ...req.body }
+  )
+    .then((updatedLink) => {
+      delete updatedLink.isDeleted;
+      return res.status(httpStatus.OK).json({
+        success: true,
+        data: {
+          ...updatedLink,
+        },
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      return next({
+        error,
+      });
+    });
+};
 
 const remove = (req, res, next) => {
   Link.findOne({ _id: req.params.id, isDeleted: false })
