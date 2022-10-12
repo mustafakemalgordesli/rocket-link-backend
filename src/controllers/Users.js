@@ -5,10 +5,21 @@ const bcrypt = require("bcrypt");
 const { generateAccessToken, encryptText } = require("../scripts/utils/helper");
 
 const create = (req, res, next) => {
-  User.find({ username: req.body.username, isDeleted: false })
+  User.find({
+    $or: [
+      { email: req.body.email, isDeleted: false },
+      { username: req.body.username, isDeleted: false },
+    ],
+  })
     .exec()
     .then((user) => {
       if (user.length >= 1) {
+        if (user[0].email === req.body.email) {
+          return next({
+            statusCode: httpStatus.CONFLICT,
+            message: "Mail exists",
+          });
+        }
         return next({
           statusCode: httpStatus.CONFLICT,
           message: "Username exists",
@@ -33,9 +44,12 @@ const create = (req, res, next) => {
           user.save().then((result) => {
             result.password = undefined;
             result.isDeleted = undefined;
+            result.isEmailVerified = undefined;
             const token = encryptText(
               generateAccessToken({
-                user: result,
+                user: {
+                  ...result.toObject(),
+                },
               })
             );
 
@@ -56,7 +70,9 @@ const create = (req, res, next) => {
 };
 
 const login = (req, res, next) => {
-  User.findOne({ username: req.body.username, isDeleted: false })
+  const query = { ...req.body };
+  delete query.password;
+  User.findOne({ ...query, isDeleted: false })
     .then((user) => {
       if (!user)
         return res.status(httpStatus.NOT_FOUND).json({
@@ -64,11 +80,12 @@ const login = (req, res, next) => {
           message: "User not found",
         });
       bcrypt.compare(req.body.password, user.password, function (err, result) {
-        if (err)
+        if (err) {
           return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "Internal Server Error",
           });
+        }
         if (!result)
           return res.status(httpStatus.BAD_REQUEST).json({
             success: false,
@@ -77,7 +94,12 @@ const login = (req, res, next) => {
 
         user.password = undefined;
         user.isDeleted = undefined;
-        const token = encryptText(generateAccessToken(user));
+        user.isEmailVerified = undefined;
+        const token = encryptText(
+          generateAccessToken({
+            ...user.toObject(),
+          })
+        );
         return res.status(httpStatus.OK).json({
           success: true,
           data: {

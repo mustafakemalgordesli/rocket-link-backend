@@ -17,6 +17,12 @@ const UserSchema = new Schema(
       required: true,
       unique: true,
     },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      // Onaylama İşlemi - isVerified: false,
+    },
     profile_picture: {
       type: String,
     },
@@ -27,6 +33,10 @@ const UserSchema = new Schema(
     password: {
       type: String,
       required: true,
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
     },
     isDeleted: {
       type: Boolean,

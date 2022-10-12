@@ -11,6 +11,7 @@ const create = (req, res, next) => {
           message: "User not found",
         });
       }
+      req.body.user_id = user._id;
       const link = new Link(req.body);
       link
         .save()
@@ -24,6 +25,7 @@ const create = (req, res, next) => {
           });
         })
         .catch((err) => {
+          console.log(err);
           return next({
             statusCode: httpStatus.BAD_REQUEST,
             message: "Link not created",
@@ -139,10 +141,48 @@ const remove = (req, res, next) => {
     });
 };
 
+const getAllByUsername = (req, res, next) => {
+  User.findOne({ username: req.params.username, isDeleted: false })
+    .then((user) => {
+      if (!user)
+        return next({
+          statusCode: httpStatus.NOT_FOUND,
+          message: "Username not found",
+        });
+
+      Link.find({ user_id: user._id, isDeleted: false, isStatus: true })
+        .select("_id title link")
+        .then((links) => {
+          if (!links)
+            return next({
+              statusCode: httpStatus.BAD_REQUEST,
+              message: "Error",
+            });
+          return res.status(httpStatus.OK).json({
+            data: links,
+            success: true,
+          });
+        })
+        .catch((err) => {
+          return next({
+            statusCode: httpStatus.INTERNAL_SERVER_ERROR,
+            message: "Internal Server Error",
+          });
+        });
+    })
+    .catch((err) => {
+      return next({
+        statusCode: httpStatus.INTERNAL_SERVER_ERROR,
+        message: "Internal Server Error",
+      });
+    });
+};
+
 module.exports = {
   create,
   getById,
   getAllByUserId,
   update,
   remove,
+  getAllByUsername,
 };

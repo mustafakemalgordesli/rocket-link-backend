@@ -1,8 +1,8 @@
 const express = require("express");
 const {
   create,
-  // getById,
   getAllByUserId,
+  getAllByUsername,
   update,
   remove,
 } = require("../controllers/Links");
@@ -17,6 +17,8 @@ router
   .post(authenticate, validate(validationSchemas.createValidation), create);
 
 // router.route("/").get(authenticate, index);
+
+router.route("/:username").get(getAllByUsername);
 
 router.route("/").get(authenticate, getAllByUserId);
 
