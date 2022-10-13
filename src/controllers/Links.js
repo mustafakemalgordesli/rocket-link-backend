@@ -84,25 +84,29 @@ const getAllByUserId = (req, res, next) => {
 };
 
 const update = (req, res, next) => {
-  Link.updateOne(
+  Link.findOneAndUpdate(
     {
       _id: req.params.id,
       isDeleted: false,
-      isStatus: true,
     },
-    { ...req.body }
+    { $set: { ...req.body } },
+    { upsert: true }
   )
-    .then((updatedLink) => {
-      delete updatedLink.isDeleted;
+    .select("_id title click_count link user_id isStatus")
+    .then((doc, err) => {
+      if (err)
+        return next({
+          statusCode: httpStatus.BAD_REQUEST,
+          message: "Link not updated",
+        });
       return res.status(httpStatus.OK).json({
         success: true,
         data: {
-          ...updatedLink,
+          ...doc.toObject(),
         },
       });
     })
     .catch((error) => {
-      console.log(error);
       return next({
         error,
       });
