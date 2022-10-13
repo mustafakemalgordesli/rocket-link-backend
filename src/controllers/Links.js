@@ -179,6 +179,37 @@ const getAllByUsername = (req, res, next) => {
     });
 };
 
+const changeStatus = (req, res, next) => {
+  Link.findOne({ _id: req.params.id })
+    .then((link) => {
+      if (!link)
+        return next({
+          statusCode: httpStatus.NOT_FOUND,
+          message: "Link not found",
+        });
+      link.isStatus = !link.isStatus;
+      link
+        .save()
+        .then((link) => {
+          return res.status(httpStatus.OK).json({
+            success: true,
+          });
+        })
+        .catch((error) => {
+          return next({
+            error,
+            message: "Link status not changed",
+            statusCode: httpStatus.BAD_REQUEST,
+          });
+        });
+    })
+    .catch((error) => {
+      return next({
+        error,
+      });
+    });
+};
+
 module.exports = {
   create,
   getById,
@@ -186,4 +217,5 @@ module.exports = {
   update,
   remove,
   getAllByUsername,
+  changeStatus,
 };

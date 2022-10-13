@@ -5,6 +5,7 @@ const {
   getAllByUsername,
   update,
   remove,
+  changeStatus,
 } = require("../controllers/Links");
 const validationSchemas = require("../validations/Links");
 const validate = require("../middlewares/validate");
@@ -29,5 +30,7 @@ router
   .put(authenticate, validate(validationSchemas.updateValidation), update);
 
 router.route("/:id").delete(authenticate, remove);
+
+router.route("/changestatus/:id").put(changeStatus);
 
 module.exports = router;
