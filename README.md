@@ -4,21 +4,21 @@
 
 ### Kullanıcı İşlemleri   {base_url}/users <br>
 Kayıt Ol:<br>
-/register   [POST]
-Body {
-	firstName: string min(3) !
-	lastName: string min(3) 
-	email: mail min(3) !
-	password: string min(8) !
-	username: string min(3) !
-}
-Giriş Yap: 
-/login  [POST]
-Body {
-password: string min(8) !
-	username: string min(3) or email
-}
-Profil Fotorafı Değiştir:
+/register   [POST]<br>
+Body {<br>
+	firstName: string min(3) !<br>
+	lastName: string min(3) <br>
+	email: mail min(3) !<br>
+	password: string min(8) !<br>
+	username: string min(3) !<br>
+}<br>
+Giriş Yap: <br>
+/login  [POST]<br>
+Body {<br>
+password: string min(8) !<br>
+	username: string min(3) or email<br>
+}<br>
+Profil Fotorafı Değiştir:<br>
 /profilepic  [POST]
 Header {
 	Authorization: “Bearer {{token}}”
