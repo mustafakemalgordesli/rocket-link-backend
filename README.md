@@ -1,8 +1,8 @@
 ### Rocket Link | Link Sharing App
 
-##BASE URL: https://rocket-link-backend.vercel.app/api
+## BASE URL: https://rocket-link-backend.vercel.app/api
 
-#Kullanıcı İşlemleri   {base_url}/users
+# Kullanıcı İşlemleri   {base_url}/users
 Kayıt Ol:
 /register   [POST]
 Body {
@@ -34,7 +34,7 @@ Header {
 
 
 
-#Link İşlemleri   {base_url}/links
+# Link İşlemleri   {base_url}/links
 Link Oluşturma:
 /   [POST]
 Header {
