@@ -19,55 +19,50 @@ password: string min(8) !<br>
 	username: string min(3) or email<br>
 }<br>
 Profil Fotorafı Değiştir:<br>
-/profilepic  [POST]
-Header {
-	Authorization: “Bearer {{token}}”
-}
+/profilepic  [POST]<br>
+Header {<br>
+	Authorization: “Bearer {{token}}”<br>
+}<br>
+Formdata {<br>
+	Profilepic: image(png, jpg, jpeg) !<br>
+}<br>
+Token İle Kullanıcı Bilgilerini Çekme:<br>
+/   [GET]<br>
+Header {<br>
+	Authorization: “Bearer {{token}}”<br>
+}<br>
 
-Formdata {
-	Profilepic: image(png, jpg, jpeg) !
-}
-
-Token İle Kullanıcı Bilgilerini Çekme:
-/   [GET]
-
-Header {
-	Authorization: “Bearer {{token}}”
-}
-
-
-
-### Link İşlemleri   {base_url}/links
-Link Oluşturma:
-/   [POST]
-Header {
-	Authorization: “Bearer {{token}}” }
-Body {
-	title :  string min(3) !
-	link: string min(3) !
-}
-
-Kullanıcının kendi tüm linklerini (admin sayfası) getirme:
-/   [GET]
-Header {
-	Authorization: “Bearer {{token}}” }
+### Link İşlemleri   {base_url}/links<br>
+Link Oluşturma:<br>
+/   [POST]<br>
+Header {<br>
+	Authorization: “Bearer {{token}}” }<br>
+Body {<br>
+	title :  string min(3) !<br>
+	link: string min(3) !<br>
+}<br>
+<br>
+Kullanıcının kendi tüm linklerini (admin sayfası) getirme:<br>
+/   [GET]<br>
+Header {<br>
+	Authorization: “Bearer {{token}}” }<br>
 
 
-Kullanıcı Adı ile tüm aktif linkleri (sadece aktif linkler) getirme:
-/:username   [GET]
+Kullanıcı Adı ile tüm aktif linkleri (sadece aktif linkler) getirme:<br>
+/:username   [GET]<br>
 
 
-Link Güncelleme:
-/:id [PUT]
-Header {
-	Authorization: “Bearer {{token}}” }
-Body {
-title :  string min(3)
-	link: string min(3) 
-}
+Link Güncelleme:<br>
+/:id [PUT]<br>
+Header {<br>
+	Authorization: “Bearer {{token}}” }<br>
+Body {<br>
+title :  string min(3)<br>
+	link: string min(3) <br>
+}<br>
 
-Link Silme
-Header {
-	Authorization: “Bearer {{token}}” }
+Link Silme<br>
+Header {<br>
+	Authorization: “Bearer {{token}}” }<br>
 
-/:id  [DELETE]
+/:id  [DELETE]<br>
