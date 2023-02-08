@@ -2,8 +2,8 @@
 
 ## BASE URL: https://rocket-link-backend.vercel.app/api
 
-### Kullanıcı İşlemleri   {base_url}/users
-Kayıt Ol:
+### Kullanıcı İşlemleri   {base_url}/users <br>
+Kayıt Ol:<br>
 /register   [POST]
 Body {
 	firstName: string min(3) !
@@ -23,11 +23,14 @@ Profil Fotorafı Değiştir:
 Header {
 	Authorization: “Bearer {{token}}”
 }
+
 Formdata {
 	Profilepic: image(png, jpg, jpeg) !
 }
+
 Token İle Kullanıcı Bilgilerini Çekme:
 /   [GET]
+
 Header {
 	Authorization: “Bearer {{token}}”
 }
