@@ -16,7 +16,11 @@ app.use(express.json());
 app.use(express.static(__dirname + "/public"));
 app.use(morgan("dev"));
 app.use(helmet());
-app.use(cors())
+const corsOptions = {
+  origin: process.env.ORIGINURL,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions))
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
